@@ -1,0 +1,25 @@
+<!-- product_list.html -->
+
+{% block content %}
+  <h2>Product List with Variations</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Color</th>
+        <th>Stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+        {% for variation in product.variations.all %}
+          <tr>
+            <td>{{ product.product_name }}</td>
+            <td>{{ variation.color.color_value }}</td>
+            <td>{{ variation.stock }}</td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

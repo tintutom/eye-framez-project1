@@ -1,0 +1,289 @@
+{% extends 'customerapp/base.html' %}
+{% block title %}
+Your Cart
+        {% endblock %}
+{% load static %}
+{% block content %}
+
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        {% include 'customerapp/includes/topnav.html' %}
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                {% include 'customerapp/includes/navdrop.html' %}
+            </div>
+            <div class="col-lg-9">
+                {% include 'customerapp/includes/navbar.html' %}
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
+            <div class="d-inline-flex">
+                <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
+                <p class="m-0 px-2">-</p>
+                <p class="m-0">Shopping Cart</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+{% if not cart_items %}
+<h2 class="text-center"> Your cart is Empty</h2>
+<div class="text-center mt-5">
+<a class="btn btn-primary " href="{% url 'store' %}">Continue Shopping</a>
+</div>
+{% else %}
+    <!-- Cart Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-bordered text-center mb-0">
+                    <thead class="bg-secondary text-dark">
+                        <tr>
+                            <th>Products</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                    {% for cart_item in cart_items %}
+                        <tr >
+                        
+                            <td class="align-middle"> <div class="float-left"> <img src="{{ cart_item.product.img1.url }}" alt="" style="width: 50px;">  {{ cart_item.product.product_name }} </div> <br>
+                                <div class="mt-5" style="width: 10rem;">
+                                    {% if cart_item.variations.all %}
+                                        {% for item in cart_item.variations.all %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p >Color:{{ item.color.color_value|title }}   </p>
+
+                                            </div> 
+                                            
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="align-middle">₹{{ cart_item.product.price }}</td>
+                            <td class="align-middle">
+                                <form action="",method="POST">
+                                {% csrf_token %} 
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                            <!-- <button onclick="minusBtn({{ cart_item.id }} , {{ cart_item.product.id }})" class="btn btn-sm btn-primary btn-minus" >
+                                                <i class="fa fa-minus"></i>
+                                            </button> -->
+                                        
+                                            <button class="btn btn-sm btn-primary btn-minus" onclick= 'decereseQuantity("quantity_value{{ forloop.counter }}","{{ cart_item.product.id }}","sub_total{{ forloop.counter }}","{{ cart_item.id}}")' ><i class="fa fa-minus"></i></button>
+                                            
+                                        </div>
+
+
+                                            
+                                            <input type="text" id="quantity_value{{ forloop.counter }}" min="1" max="20" name="quantity" class="form-control form-control-sm bg-secondary text-center" value="{{ cart_item.quantity }}">
+                                            
+                                            <div class="input-group-btn">
+
+                                            {% comment %} <a href="{% url 'add_to_cart' cart_item.product.id %}"><button class="btn btn-sm btn-primary btn-plus">
+                                                    <i class="fa fa-plus"></i>
+                                                </button></a>  {% endcomment %}
+                                                <button class="btn btn-sm btn-primary btn-minus" onclick= 'increaseQuantity("quantity_value{{ forloop.counter }}","{{ cart_item.product.id }}","sub_total{{ forloop.counter }}","{{ cart_item.id}}")' ><i class="fa fa-plus"></i></button>
+
+                                            </div>
+                                        </div>
+                            </form> 
+                            </td>
+                            <td id="sub_total{{ forloop.counter }}" class="align-middle">₹{{ cart_item.sub_total }} </td>
+                            <td class="align-middle"><a href="{% url 'delete_cart_item' cart_item.product.id cart_item.id %}" onclick="delcart_item()" type="button"class="btn btn-sm btn-primary"> <i class="fa fa-times"></i></a></td>
+                        </tr>
+                
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        
+            <div class="col-lg-4">
+            
+        
+
+                
+                <div class="card border-secondary mb-5">
+                    <div class="card-header bg-secondary border-0">
+                        <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3 pt-1">
+                            <h6 class="font-weight-medium">Subtotal</h6>
+                            <h6 id="total_price" class="font-weight-medium">₹{{ total_price }} </h6>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3 pt-1">
+                            <h6 class="font-weight-medium">Offer Applied </h6>
+                            <h6 id="saved" style="color: green;" class="font-weight-medium">-{{ saved }}</h6>
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="card-footer border-secondary bg-transparent">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5 class="font-weight-bold">Total</h5>
+                            <h5 id="total" class="font-weight-bold">₹{{ total }}</h5>
+                        </div>
+                        <a href="{% url 'checkout' %}"><button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Cart End -->
+    {% for i in messages %}
+    <p class="pl-3"style="color:red;">{{i}}</p>
+    {% endfor %}
+{% endif %}
+    {% include 'customerapp/includes/footer.html' %}
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css">
+    
+    <script>
+        function delcart_item() {
+            console.log('jdfjkfhd')
+            event.preventDefault();
+            var dlt = event.currentTarget.href
+            console.log(dlt)
+            Swal.fire({
+                title: 'Are you sure want to delete?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2DAD49',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Back',
+            }).then((result) => {
+                if (result.isConfirmed) {
+    
+                    window.location = dlt;
+                }
+            })
+        }
+    
+        function increaseQuantity(quantityId, productId, subTotalId, cartItemId) {
+            var quantityElement = document.getElementById(quantityId);
+            var quantity = parseInt(quantityElement.value);
+            var maxQuantity = parseInt(quantityElement.getAttribute('max'));
+    
+            if (quantity >= maxQuantity) {
+                // Display error message using toastr
+                toastr.error('Exceeded the available stock count.');
+                return;
+            }
+    
+            // Make AJAX request to increase quantity
+            $.ajax({
+                url: '/increase_quantity/',  // Update the URL to the correct endpoint
+                data: {
+                    id: productId,
+                    c_id: cartItemId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    // Update quantity, sub-total, and total
+                    quantityElement.value = response.quantity;
+                    document.getElementById(subTotalId).innerHTML = '₹' + response.sub_total;
+                    document.getElementById('total_price').innerHTML = '₹' + response.total_price;
+                    document.getElementById('total').innerHTML = '₹' + response.total;
+                    document.getElementById('saved').innerHTML = '-₹' + response.saved;
+                },
+                error: function (xhr) {
+                    // Display error message using toastr
+                    toastr.error(xhr.responseJSON.message);
+                }
+            });
+        }
+
+        function decreaseQuantity(quantityId, productId, subTotalId, cartItemId) {
+            var quantityElement = document.getElementById(quantityId);
+            var quantity = parseInt(quantityElement.value);
+        
+            if (quantity <= 1) {
+                // Display error message using toastr
+                toastr.error('Minimum quantity should be 1.');
+                return;
+            }
+        
+            // Make AJAX request to decrease quantity
+            $.ajax({
+                url: '/cart/decrease_quantity/',
+                data: {
+                    id: productId,
+                    c_id: cartItemId
+                },
+                dataType: 'json',
+                success: function (response) {
+                    // Update quantity, sub-total, and total
+                    quantityElement.value = response.quantity;
+                    document.getElementById(subTotalId).innerHTML = '₹' + response.sub_total;
+                    document.getElementById('total_price').innerHTML = '₹' + response.total_price;
+                    document.getElementById('total').innerHTML = '₹' + response.total;
+                    document.getElementById('saved').innerHTML = '-' + response.saved;
+                },
+                error: function (xhr) {
+                    // Display error message using toastr
+                    toastr.error(xhr.responseJSON.message);
+                }
+            });
+        }
+        
+    </script>
+        
+    {% comment %} <script>
+        function delcart_item() {
+            console.log('jdfjkfhd')
+          event.preventDefault();
+          var dlt = event.currentTarget.href
+          console.log(dlt)
+          Swal.fire({
+            title: 'Are you sure want to delete?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2DAD49',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Back',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              
+              window.location = dlt;
+            }
+          })
+        }
+      </script> {% endcomment %}
+    
+    {% block cart %}
+        <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends 'customerapp/base.html' %}
+{% block title %}
+Orders
+{% endblock %}
+{% block content %}
+{% include 'customerapp/includes/topnav.html' %}
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                {% include 'customerapp/includes/navdrop.html' %}
+            </div>
+            <div class="col-lg-9">
+                {% include 'customerapp/includes/navbar.html' %}
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Your Orders</h1>
+            <div class="d-inline-flex">
+                <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
+                <p class="m-0 px-2">-</p>
+                <p class="m-0">Your Orders</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+    {% for message in messages %}
+    <div class=" container alert alert-success" role="alert">
+        <h3 class="text-center">{{ message }}</h3>
+      </div>
+      {% endfor %}
+    <!-- Cart Start -->
+    {% if not orders %}
+    <h2 class="text-center"> You have no orders</h2>
+    <div class="text-center mt-5">
+    <a class="btn btn-primary " href="{% url 'store' %}">Continue Shopping</a>
+    </div>
+    {% else %}
+    <div class="row px-xl-5">
+        <div class="col-md-12 table-responsive mb-5">
+            <table class="table table-bordered text-center mb-0 text-center">
+                <thead class="bg-secondary text-dark">
+                    <tr>
+                        <th>Ordered Date</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total Price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    {% for order in orders %}
+                    <tr>
+                        <td class="align-middle">{{ order.created_at }}</td>
+                        
+                        <td class="align-middle">
+                            <!-- Display product name, image, and quantity -->
+                            {% for order_item in order_items %}
+                            {% if order_item.order == order %}
+                            <img src="{{ order_item.variation.img1.url }}" alt="" style="width: 50px;">
+                            {{ order_item.product.product_name }}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{% for order_item in order_items %}
+                            {% if order_item.order == order %}
+                            {{ order_item.quantity }}
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="align-middle">{{ order.total_price }}</td>
+                        {% comment %} <td class="align-middle">{{ order.payment_mode }}</td> {% endcomment %}
+                        
+                        {% comment %} <td class="align-middle">
+                            {{ order.address.address }},{{ order.address.state }},{{ order.address.country }}
+                        </td> {% endcomment %}
+                        <td class="align-middle">
+                            <a href="{% url 'orderview' order.id %}"><button class="btn btn-sm btn-primary">View</button></a>
+                        </td>
+                    </tr>
+                    <!-- Loop through the related OrderItem objects for each order -->
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    
+
+    <div class="col-12 pb-1">
+        <nav aria-label="Page navigation">
+        {% if orders.has_other_pages %}  
+        <ul class="pagination justify-content-center mb-3">
+            {% if orders.has_previous %}
+            <li class="page-item">
+            <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            {% endif %}
+            
+
+            {% for i in orders.paginator.page_range %}
+            {% if orders.number == i %}
+            <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+            {% else %}
+            <li class="page-item "><a class="page-link" href="?page={{ i }}">{{i}}</a></li> 
+            {% endif %}
+            {% endfor %}
+
+
+            {% if orders.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+            </li>
+            {% endif %}
+            
+
+            
+        </ul>
+        {% endif %}
+        </nav>
+    </div>
+
+{% include 'customerapp/includes/footer.html' %}
+{% endblock %}

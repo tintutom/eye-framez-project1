@@ -1,0 +1,230 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+{% block content %}
+  <div class="container-scroller">
+
+    {% include 'adminapp/includes/top-nav.html' %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_settings-panel.html -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="ti-settings"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close ti-close"></i>
+          <p class="settings-heading">SIDEBAR SKINS</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
+          <p class="settings-heading mt-2">HEADER SKINS</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+
+      {% include 'adminapp/includes/navbar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        {% for message in messages %}
+        <h2>{{message}}</h2>
+        {% endfor %}
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title text-center">Order Item Table</h4>
+                  <p class="card-description">
+                    
+
+                  </p>
+                  <div class="table-responsive fit-content">
+                    {% if order_items %}
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <!-- <th>Order Item ID</th> -->
+                          
+                          <th>UserName</th>
+                          <th>Product </th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                          <!-- <th>Is Available</th> -->
+                          <th>Status</th>
+                          <th></th>
+                          <th>Order View</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for o in order_items %}
+                        <tr>
+                          <!-- <td>{{ o.id }}</td> -->
+                          
+                          <td>{{ o.order.user.first_name }}</td>
+                          <td> <img src="{{ o.variation.img1.url }}" style="border-radius: 0%;" alt=""> {{ o.product.product_name }}</td>
+                          <td>{{ o.quantity }}</td>
+                          <td>{{ o.order.total_price }}</td>
+                          <td>{{ o.status}}</td>
+                          <!-- <td>{{ p.is_available }}</td> -->
+                          
+                          <td>
+                            {% if o.status == 'Requested For Return'  %}
+                              {% if o.status != "Refund Initiated"%}
+                              <a href="{% url 'accept_return' o.id %}"><button type="submit" class="btn btn-dark ">Accept</button> </a>
+                              {% elif o.status == "Refund Initiated" %}
+                              <a href=""><button type="submit" disabled class="btn btn-dark ">Accept</button> </a>
+                              {% endif %}
+                            {% elif o.status != "Refund Initiated" %}
+                              <select onchange="order_status_change(event,'{{o.id}}')" style="border-color: rgb(124, 121, 121);width:7.5rem;height:2rem;border-radius:.5rem;" name="" id="order_status">
+                                <option selected value="{{ o.id }}" >{{ o.status }}</option>
+                                
+                                 {% if o.status == 'Order Placed' %}
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                               
+                                {% elif o.status == 'Shipped' %}
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                                
+
+                                {% elif o.status == 'Delivered' %}
+                                <option value="Cancelled">Cancelled</option>
+
+                                {% elif o.status == 'Cancelled' %}
+                                  <option value=""></option>
+                                {% endif %} 
+
+                                
+
+                              </select>
+                            {% endif %}
+                            
+                          </td>
+                          
+                          <td>
+                            <a target="" href="{% url 'order_details' order_id=o.order.id %}">
+                              <button class="btn btn-sm btn-primary">View Details</button>
+                            </a>
+                          </td>
+
+
+
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% else %}
+                    <p>No Orders yet...</p>
+                    {% endif %}
+                  </div>
+
+
+                  <div class="col-12 pb-1 mt-3">
+                    <nav aria-label="Page navigation">
+                        {% if order_items.has_other_pages %}
+                      <ul class="pagination justify-content-center mb-3">
+                        {% if order_items.has_previous %}
+                        <li class="page-item">
+                          <a class="page-link" href="?page={{ order_items.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                              <span class="sr-only">Previous</span>
+                            </a>
+                          </li>
+                          {% endif %}
+    
+                        {% for i in order_items.paginator.page_range %}
+                        {% if order_items.number == i %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                        {% else %}
+                        <li class="page-item "><a class="page-link" href="?page={{ i }}">{{ i }}</a></li> 
+                        {% endif %}
+    
+                        {% endfor %}
+    
+    
+                        {% if order_items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ order_items.next_page_number }}" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                              <span class="sr-only">Next</span>
+                          </a>
+                          </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                              <span class="sr-only">Next</span>
+                          </a>
+                          </li>
+                          {% endif %}
+    
+                        
+                    </ul>
+                    {% endif %}
+                    </nav>
+                </div>
+
+
+
+                </div>
+              </div>
+            </div>
+
+
+
+            
+        
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
+          </div>
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+
+<script>
+  
+  function order_status_change(event, order_id){
+    status = event.target.value
+    id = order_id
+    console.log(status, id)
+    $.ajax({
+        url: '/orders/order_status_change/',
+        method: 'POST',
+        dataType: 'json',
+        data: {
+            id: id,
+            status: status,
+            csrfmiddlewaretoken: "{{csrf_token}}"
+        },
+        success: (response) => {
+            location.reload()
+        }
+    })
+}
+
+
+</script>
+  {% endblock %}

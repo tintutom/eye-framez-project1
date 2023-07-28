@@ -1,0 +1,128 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+{% block content %}
+  <div class="container-scroller">
+
+    {% include 'adminapp/includes/top-nav.html' %}
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_settings-panel.html -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="ti-settings"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close ti-close"></i>
+          <p class="settings-heading">SIDEBAR SKINS</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border me-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border me-3"></div>Dark</div>
+          <p class="settings-heading mt-2">HEADER SKINS</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+
+      {% include 'adminapp/includes/navbar.html' %}
+      <!-- partial -->
+      <div class="main-panel">
+        {% for message in messages %}
+        <h2>{{message}}</h2>
+        {% endfor %}
+        <div class="content-wrapper">
+            <div class="m-2">
+                <div class="btn-wrapper">
+                    <a href="{% url 'generateProductPdf' %}" class="btn mx-3 btn-dark text-white me-0"><i class="icon-printer"></i> Download as PDF</a>
+                    <a href="{% url 'product_csv' %}" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export as CSV</a>
+                    <a href="{% url 'product_excel' %}" class="btn btn-success text-white me-0"><i class="icon-download"></i> Export as Excel</a>
+                </div>
+                <br>
+                <form action="{% url 'product_report' %}"  method="GET">
+                    <div class="row">
+                      <br>
+                      <br>
+                        <div class="col-md-4">
+                            <label>From</label>
+                            <input type="date" class="form-control" name="from">
+                            <br>
+                        </div>
+                        <div class="col-md-4">
+                            <label>To</label>
+                            <input type="date" class="form-control" name="to">
+                        </div>
+                        <div class="col-md-4 mt-3">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+
+                    </div>
+                </form>
+          <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title text-center">Product Report</h4>
+                  <p class="card-description">
+                    
+                  
+
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Product ID</th>
+                          
+                          <th>Product Name</th>
+                          
+                          <th>Price</th>
+                          
+                          <th>Stock</th>
+                          <!-- <th>Is Available</th> -->
+                        <th>Category</th>
+                        <th>SubCategory</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for p in products %}
+                        <tr>
+                          <td>{{ p.id}}</td>
+                          
+                          <td>{{ p.product_name}}</td>
+                        
+                          <td>{{ p.price}}</td>
+                          
+                          
+                          <td>{{ p.stock}}</td>
+                         
+                          <td>{{ p.category.cat_name}}</td>
+                          <td>{{ p.subcategory.sub_name }}</td>
+                          
+                        {% endfor %}
+                          
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Copyright © 2021. All rights reserved.</span>
+          </div>
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+ {% endblock %}

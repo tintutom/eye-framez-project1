@@ -1,0 +1,72 @@
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>RegistrationForm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- LINEARICONS -->
+    <link rel="stylesheet" href="{% static 'fonts/linearicons/style.css' %}">
+    
+    <!-- STYLE CSS -->
+    <link rel="stylesheet" href="{% static 'css/signup.css'%}">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="inner">
+            
+            <form action=" " method="POST">
+                {% csrf_token %}
+                <h3>New Account?</h3>
+                <div class="form-holder">
+                    <span class="lnr lnr-user"></span>
+                    {{form.first_name|add_class:"form-control"}}
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-user"></span>
+    
+                    {{form.last_name|add_class:"form-control"}}
+                </div>
+              
+                <div class="form-holder">
+                    <span class="lnr lnr-phone-handset"></span>
+    
+                    {{form.phone|add_class:"form-control"}}
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-envelope"></span>
+                    
+                    {{form.email|add_class:"form-control"}}
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-lock"></span>
+                    
+                    {{form.password1|add_class:"form-control"}}
+                </div>
+                <div class="form-holder">
+                    <span class="lnr lnr-lock"></span>
+                
+                    {{form.password2|add_class:"form-control"}}
+                </div>
+                <button type="submit">
+                    <span>Register</span>
+                </button>
+                <!-- <a href="{% url 'login-page' %}">Already have Account? Login</a> -->
+                <div class="" style="padding-top: 1rem;">
+                    <h4> <a style="padding:5rem;padding-top:2rem;color:black;" href="{% url 'login-page' %}">Already Have Account?</a></h4>
+                 </div>
+                 <div>
+                    <p>{{form.errors}}</p>
+                 </div>
+            </form>            
+        </div>       
+    </div>
+    
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/signup_main.js' %}"></script>
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>

@@ -1,0 +1,124 @@
+{% extends 'customerapp/base.html' %}
+
+{% block content %}
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        {% include 'customerapp/includes/topnav.html' %}
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                 <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a> 
+                {% include 'customerapp/includes/navdrop.html' %}
+            </div>
+            <div class="col-lg-9">
+                {% include 'customerapp/includes/navbar.html' %}
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Your Profile</h1>
+            <div class="d-inline-flex">
+                <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
+                <p class="m-0 px-2">-</p>
+                <p class="m-0">Your Profile</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card" style="width: 18rem;">
+                    <ul class="list-group list-group-flush">
+                       <a href="{% url 'user_wishlist' %}"style="text-decoration: none;"><li class="list-group-item">My Wishlist</li></a> 
+                       <a href="{% url 'order_summary' %}"style="text-decoration: none;"> <li class="list-group-item">My Orders</li></a>
+                       <a href="{% url 'view_address'  %}" style="text-decoration: none;"><li class="list-group-item">My Address</li></a> 
+                    </ul>
+                  </div>
+            </div>
+            <div class="col-md-8">
+              {% for m in messages %}
+              <p>{{ m }}</p>
+              {% endfor %}
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row no-gutters">
+                      
+                      <div class="col-md-12">
+                        <div class="card-body">
+                          <h5 class="card-title text-center">Your Profile</h5>
+                          <div class="row">
+                            <div class="col-md-6">
+                                <p class="card-text"><h6>First Name: <span>{{request.user.first_name}}</span> </h6></p>
+
+                            </div>
+                            <div class="col-md-6">
+                                <p class="card-text"><h6>Last Name: <span>{{request.user.last_name}}</span> </h6></p>
+
+                            </div>
+                          </div>
+                          <p class="card-text"><h6>Email Address: <span>{{request.user.email}}</span> </h6></p>
+                          <p class="card-text"><h6>Phone Number: <span>{{request.user.phone}}</span> </h6></p>
+
+
+                          <div class="text-center">
+                            <a href="{% url 'edit_profile' %}"  style="color:green;" class="btn btn-default btn-rounded mb-4" >
+                              Edit Profile</a>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h5>Change Passsword</h5>
+                  </div>
+                  <form class="form-inline mt-3" action="{% url 'change_password' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="currentPassword" class="sr-only">Current Password</label>
+                        <input type="password" class="form-control" name="current_password" id="currentPassword" placeholder="Current Password">
+                    </div>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="newPassword" class="sr-only">New Password</label>
+                        <input type="password" class="form-control" name="new_password" id="newPassword" placeholder="New Password">
+                    </div>
+                    <div class="form-group mx-sm-3 mb-2 mt-4" style="padding-left: 6rem;">
+                        <label for="confirmPassword" class="sr-only">Confirm Password</label>
+                        <input type="password" class="form-control" name="confirm_password" id="confirmPassword" placeholder="Confirm Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Reset</button>
+                </form>
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <p class="success-message">{{ message }}</p>
+                    {% elif message.tags == 'error' %}
+                        <p class="error-message">{{ message }}</p>
+                    {% else %}
+                        <p>{{ message }}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+
+
+        </div>
+    </div>
+
+    {% include 'customerapp/includes/footer.html' %}
+
+{% endblock %}

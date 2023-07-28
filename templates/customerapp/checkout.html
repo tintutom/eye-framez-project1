@@ -1,0 +1,398 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <title>Checkout</title>
+     <!-- Favicon -->
+     <link href="{% static 'img/favicon.ico' %}" rel="icon">
+     
+     <!-- Google Web Fonts -->
+     <link rel="preconnect" href="https://fonts.gstatic.com">
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+     
+     <!-- Font Awesome -->
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+ 
+     <!-- Libraries Stylesheet -->
+     <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+ 
+     <!-- Customized Bootstrap Stylesheet -->
+     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+     <script src="{% static '/js/jquery-3.6.1.js' %}"></script>
+     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://cdn.jsdelivr.net/gh/cosmogicofficial/quantumalert@latest/minfile/quantumalert.js" charset="utf-8"></script>
+     
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+
+   
+  </head>
+  <body>
+    
+    <div class="container">
+        <div class="py-5 text-center">
+          
+          <h2>Checkout form</h2>
+          
+        </div>
+        
+        
+        <form action="{% url 'place_order' %}" method="POST">
+          {% csrf_token %}
+        <div class="row ml-3">
+          
+          <div class="col-md-4 order-md-2 mb-4">
+            {% if  total  > 0 %}
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+              <span class="text-muted">Your cart</span>
+              <span class="badge badge-secondary badge-pill">{{ cart_count }}</span>
+            </h4>
+
+            <ul class="list-group mb-3">
+             
+              {% for cart_item in cart_items %}
+              <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <div>
+                  <h6 class="my-0">{{ cart_item.product.product_name }}</h6>
+                  <img src="" alt="">
+                  <small class="text-muted">Quantity: {{ cart_item.quantity }}</small>
+                </div>
+                <span class="text-muted">₹{{ cart_item.product.price }}</span>
+              </li>
+              
+              {% endfor %}
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Offer Applied</span>
+                <strong id="saved">{{ saved }}</strong>
+            </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Total</span>
+                <strong id="grand_total">{{ total|floatformat:"2"  }}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span> Discount Price</span>
+                <strong id="discount_price" style="color: green;"> {% if discount %} -{{ discount }} {% else %} 0 {% endif %}</strong>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Total </span>
+                <strong id="total" name="total">{{ total_p|floatformat:"2"  }}</strong>
+                
+              </li>
+              
+            </ul>
+            
+            <hr class="mb-4">
+            <input type="hidden" value="COD" name="payment_mode">
+            {% if not address%}
+            <button disabled class="btn btn-primary btn-lg" style="width:21.5rem;" type="submit">Cash On Delivary  </button>
+
+            {% else %}
+              
+                <div class="mt-2 text-center">
+                  <button class="btn btn-primary btn-lg" style="width:21.2rem;" type="submit">Cash On Delivary  </button>
+              
+                  <button class="btn btn-primary btn-lg mt-2 mb-2 payWithRazorpay" style="width:21.2rem;" type="button">Pay With Razorpay  </button>
+                  <div id="paypal-button-container"></div>
+                </div>
+              {% endif %}
+              {% else %}
+                  <h2 class="text-center"> Your cart is Empty</h2>
+                  <div class="text-center mt-5">
+                  <a class="btn btn-primary " href="{% url 'store' %}">Continue Shopping</a>
+                  </div>
+              {% endif %}
+            
+          </div>
+          
+          {% if not address %}
+          <div class="col-md-8 order-md-1 mt-3 text-center">
+           <p> <b> Please Add Address to procced your order</b></p>
+            
+            <a href="{% url 'add_address' %}" class="btn btn-primary mt-5" style="width:16rem;" type="submit">Add New Address  </a>
+            </div>
+          {% else %}
+          
+          <h3 class="mt-5">Select Address</h3>
+          
+          <div class="col-md-8 order-md-1">
+            {% for a in address %}
+            <div class="card mt-5 ">
+              <div class="card-body">
+                <input type="radio" required value="{{ a.id }}" name="address" class="address float-left  mr-2" style="height:2rem;width:1rem;" >
+                <h5>{{ a.fname}}</h5>
+                <p class="pl-3">{{a.address}},{{a.country}},{{a.state}},{{a.pincode}}</p>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="">
+              <div class="col-lg-7 mt-5">
+                
+                    <form class="mb-5" id="coupon_form">
+                      <div class="input-group">
+                          <input type="text" name="code" id="code" class="form-control p-4" placeholder="Coupon Code">
+                          <div class="input-group-append">
+                              {% if total > 1500 %}
+                              <a onclick='apply_coupon()' class="btn btn-primary" style="padding-top: .7rem;">Apply Coupon</a>
+                              {% else %}
+                              <a class="btn btn-primary disabled" style="padding-top: .7rem;">Apply Coupon</a>
+                              {% endif %}
+                          </div>
+                      </div>
+                    </form>
+                      
+                      <p>
+                        <button type="button" class="btn btn-primary mt-5" id="bt" onclick="toggle(this)">Get Coupon Code</button>
+                </p>
+            
+                <div style=" padding:10px; display:none;" id="cont">
+                  <div class="row">
+                    {% if coupons %}
+                    {% for c in coupons %}
+                    <div class="col-md-3">
+                      <button id="p1" type="button" onclick="copy(this)" class="btn btn-outline-dark">{{ c.code }}</button>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="m-5">No coupons available</p>
+                    {% endif %}
+                  </div>
+                  
+                </div>
+
+
+                </div>
+            </div>
+            
+          </div>
+          
+          {% endif %}
+          {% if address %}
+          <a href="{% url 'add_address' %}" class="btn btn-primary mt-5  float-right" style="margin-left:21.5rem;" type="submit">Add New Address  </a>
+          {% else %}
+          {% endif %}
+        </form>
+        <div>
+          
+        </div>
+        
+        
+      </div>
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+          <p class="mb-1">&copy; Company Name</p>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="#">Privacy</a></li>
+            <li class="list-inline-item"><a href="#">Terms</a></li>
+            <li class="list-inline-item"><a href="#">Support</a></li>
+          </ul>
+        </footer>
+      </div>
+      
+      
+      <!-- Razorpay -->
+    
+      <script src="{% static '/js/jquery-3.6.1.js' %}"></script>
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+      <script src="{% static '/js/checkout.js' %}"></script>
+      <!-- <script src="{% static '/js/coupon.js' %}"></script> -->
+      
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+      
+
+      {% block scripts %}
+      <script src="https://www.paypal.com/sdk/js?client-id=AZ52qvfMslohQsWKKcQkBKSwDljMb_4WxlEyrS-Msb5-ngFD0p0vGN48U-HgFi0tkCSVFhAivRhtMKm0&currency=USD&components=buttons,marks&disable-funding=credit,card"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+
+      <script>
+
+
+        
+      
+  
+        paypal.Buttons({
+          style: {
+            
+            color:   'black',
+            
+          },
+          // Sets up the transaction when a payment button is clicked
+          onClick:function(data,actions){
+            var address=$(".address:checked").val();
+            var token=$('input[name=csrfmiddlewaretoken]').val();
+            console.log(address)
+            if (address == undefined){
+                
+                swal("Alert", "All Fields are required", "error");
+                return false;
+            }
+            else{
+              return true;
+            }
+
+          },
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: {{ total_p|floatformat:"2" }} // Can also reference a variable or function
+                }
+              }]
+            });
+          },
+          // Finalize the transaction after payer approval
+          onApprove: (data, actions) => {
+            return actions.order.capture().then(function(orderData) {
+              // Successful capture! For dev/demo purposes:
+              console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+              //alert(orderData.id);
+              //const transaction = orderData.purchase_units[0].payments.captures[0]; -->
+              //alert(`Transaction ${transaction.status}: ${transaction.id}\n\nSee console for all available details`);
+              // When ready to go live, remove the alert and show a success message within this page. For example:
+              // const element = document.getElementById('paypal-button-container');
+              // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+              // Or go to another URL:  actions.redirect('thank_you.html');
+              var address=$(".address:checked").val();
+              var token=$('input[name=csrfmiddlewaretoken]').val();
+              data={
+                'address':address,
+                "payment_mode":"Paypal",
+                'payment_id': orderData.id,
+                csrfmiddlewaretoken:token
+            }
+            $.ajax({
+                method: "POST",
+                url: "/orders/place_order/",
+                data: data,
+                success: function (responsec) {
+                    swal("Congrats",responsec.status).then((value) => {
+                        window.location.href='/orders/order_summary/'
+                    });
+                    
+                    
+                }
+            });
+            });
+          }
+        })
+
+              let flag=0
+              function apply_coupon(){
+                
+                console.log(flag)
+                var code=document.getElementById('code').value
+                console.log(code)
+              
+                if(flag==0){
+
+                  $.ajax({
+                    type:"GET",
+                    url:"/cart/apply_coupon/",
+                    data:{
+                        'code':code
+                    },
+                    success : function(r){
+                      if (r.c_exists==true){
+
+                      
+                        if(r.status==true){
+                          
+                            $('#total').text("₹"+r.total)
+                        $('#discount_price').text("-"+r.discount)
+                        Qual.success("Success !","Coupon applied");
+                        
+                          
+
+                        
+                        
+                      }else{
+                        
+                        Qual.error("Oh no !","The Coupon has expired!!!!!Try another Coupon...",);
+                    
+                      }
+                    }else{
+                      Qual.error("Oh no !","Coupon is not valid");
+                    }
+                        
+                    },
+                    error:function(r){
+                      Qual.error("Oh no !","Something wrong happened");
+                    }
+                  });
+                  flag++;
+                  console.log(flag);
+                  
+                }else{
+                  Qual.error("Coupon already applied...");
+                  }
+
+                        
+          
+              } 
+
+
+              
+              <!-- toggle -->
+              $( "#button" ).click(function() {
+                $( "#item" ).toggle();
+            });
+          
+            function toggle(ele) {
+              var cont = document.getElementById('cont');
+              if (cont.style.display == 'block') {
+                  cont.style.display = 'none';
+      
+                  document.getElementById(ele.id).value = 'Show DIV';
+              }
+              else {
+                  cont.style.display = 'block';
+                  document.getElementById(ele.id).value = 'Hide DIV';
+              }
+          }
+
+    
+
+          <!-- Copy coupon code -->
+          function copy(that){
+            var inp =document.createElement('input');
+            document.body.appendChild(inp)
+            inp.value =that.textContent
+            inp.select();
+            document.execCommand('copy',false);
+            inp.remove();
+            toastr.info('Copied to clipboard');
+            }
+
+
+
+
+        </script>
+
+
+
+
+
+      
+        
+      {% endblock %}
+      
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script> -->
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>

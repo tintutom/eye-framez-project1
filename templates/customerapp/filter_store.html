@@ -1,0 +1,276 @@
+{% extends 'customerapp/base.html' %}
+{% load static %}
+
+/* Your CSS file */
+.selected {
+    background-color: #e0a800;
+}
+
+
+{% block content %}
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+      
+        {% include 'customerapp/includes/topnav.html' %}
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0">Categories</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                {% include 'customerapp/includes/navdrop.html' %}
+            </div>
+            <div class="col-lg-9">
+        
+                {% include 'customerapp/includes/navbar.html' %}
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Our Shop</h1>
+            <div class="d-inline-flex">
+                <p class="m-0"><a href="{% url 'home' %}">Home</a></p>
+                <p class="m-0 px-2">-</p>
+                <p class="m-0">Shop</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+    {% for message in messages %}
+    <div class=" container alert alert-success" role="alert">
+        <h5 class="text-center">{{ message }}- <a href="{% url 'user_wishlist' %}">Wishlist</a> </h5>
+      </div>
+      {% endfor %}
+
+    <!-- Shop Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            <div class="col-lg-3 col-md-12">
+                <!-- Price Start -->
+                <div class="card">
+                    <article class="filter-group">
+                        <header class="card-header">
+                            <a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true" class="">
+                                <i class="icon-control fa fa-chevron-down"></i>
+                                <h6 class="title">Categories</h6>
+                            </a>
+                        </header>
+                        <div class="filter-content collapse show" id="collapse_1">
+                            <div class="card-body">
+                                
+                                <ul class="list-menu">
+                                    <li><a href="{% url 'store' %}">All Products </a></li>
+                                    {% for category in category %}
+                                        <li><a href="{{ category.get_url }}">{{category.cat_name}} </a></li>
+                                    {% endfor %} 
+                                </ul>
+                
+                            </div> 
+                        </div>
+                    </div>
+                <div class="filter-content collapse show" id="collapse_3" style="">
+                    <div class="card-body">
+                        <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
+                        <form action="{% url 'filter_price' %}" method="GET">
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="1" type="radio" name="gridRadios" id="gridRadios1" {% if selected_filter == '1' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '1' %}selected{% endif %}" for="gridRadios1">
+                                    < 100
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="2" type="radio" name="gridRadios" id="gridRadios2" {% if selected_filter == '2' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '2' %}selected{% endif %}" for="gridRadios2">
+                                    100 - 500
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="3" type="radio" name="gridRadios" id="gridRadios3" {% if selected_filter == '3' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '3' %}selected{% endif %}" for="gridRadios3">
+                                    500 - 1000
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="4" type="radio" name="gridRadios" id="gridRadios4" {% if selected_filter == '4' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '4' %}selected{% endif %}" for="gridRadios4">
+                                    1000 - 5000
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="5" type="radio" name="gridRadios" id="gridRadios5" {% if selected_filter == '5' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '5' %}selected{% endif %}" for="gridRadios5">
+                                    5000 - 10,000
+                                </label>
+                            </div>
+                            <div class="form-check mt-3">
+                                <input class="form-check-input" value="6" type="radio" name="gridRadios" id="gridRadios6" {% if selected_filter == '6' %}checked{% endif %}>
+                                <label class="form-check-label {% if selected_filter == '6' %}selected{% endif %}" for="gridRadios6">
+                                    > 10,000
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-block btn-primary mt-3">Apply</button>
+                        </form>
+                        
+                        
+                    </div>
+                </div>
+                <!-- Price End -->
+    
+            </div>
+           
+            <!-- Shop Sidebar End -->
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-9 col-md-12">
+                <div class="row pb-3">
+                    
+                    {% if products %}
+                    {% for p in products %}
+                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                    
+                        <div class="card product-item border-0 mb-4 " style="height:30rem;">
+                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            
+                                <a href="{{ p.get_url }}" class="btn btn-sm text-dark p-0"><img class="img-fluid w-100" style="object-fit: contain;"  src="{{p.img1.url}}" alt=""></a>
+
+                            </div>
+                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                <h6 class="text-truncate mb-3">{{ p.product_name }}</h6>
+                                <div class="d-flex justify-content-center">
+                                    <h6>₹{{ p.price }}</h6><h6 class="text-muted ml-2"><span style="color: green;">{% if p.productoffer.discount %}
+                                        <!-- p {{.productoffer.discount }}% off {{ p.category.categoryoffer.discount }} -->
+                                        
+                                        
+                                        {% if p.productoffer.discount > p.category.categoryoffer.discount and p.productoffer.discount > p.subcategory.subcategoryoffer.discount %}  
+                                            
+                                                upto {{ p.productoffer.discount }}% off
+                                        {% elif p.category.categoryoffer.discount > p.productoffer.discount and p.category.categoryoffer.discount > p.subcategory.subcategoryoffer.discount   %}
+                                                upto {{ p.category.categoryoffer.discount }}% off
+                                        
+                                        {%else %}
+                                                upto {{ p.subcategory.subcategoryoffer.discount }}% off
+                                        {% endif %}
+
+                                        {% else %}
+
+                                        {% endif %}</span></h6>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between bg-light border">
+                                <a href="{% url 'add_to_wishlist' p.id %}"> <i class="fas fa-heart text-primary"></i></a>
+
+                                <a href="{{ p.get_url }}" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                            </div>
+                        </div>
+            
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No products</p>
+                    {% endif %}
+            
+                    
+                    <div class="col-12 pb-1">
+                        <nav aria-label="Page navigation">
+                            {% if products.has_other_pages %}
+                        <ul class="pagination justify-content-center mb-3">
+                            {% if products.has_previous %}
+                            <li class="page-item">
+                            <a class="page-link" href="?page={{ products.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for i in products.paginator.page_range %}
+                            {% if products.number == i %}
+                            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                            {% else %}
+                            <li class="page-item "><a class="page-link" href="?page={{ i }}">{{ i }}</a></li> 
+                            {% endif %}
+
+                            {% endfor %}
+
+
+                            {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}" aria-label="Next">
+                                  <span aria-hidden="true">&raquo;</span>
+                                  <span class="sr-only">Next</span>
+                              </a>
+                              </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                  <span aria-hidden="true">&raquo;</span>
+                                  <span class="sr-only">Next</span>
+                              </a>
+                              </li>
+                              {% endif %}
+
+                            
+                        </ul>
+                        {% endif %}
+                        </nav>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Shop Product End -->
+        </div>
+    </div>
+    <!-- Shop End -->
+
+    {% include 'customerapp/includes/footer.html' %}
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+    <script>
+        const radioButtons = document.querySelectorAll('input[name="gridRadios"]');
+        let selectedFilter = "{{ selected_filter }}";
+
+        radioButtons.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                selectedFilter = radio.value;
+                updateHighlight();
+            });
+        });
+
+        function updateHighlight() {
+            radioButtons.forEach(function (rb) {
+                const label = rb.nextElementSibling;
+                if (rb.value === selectedFilter) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        }
+
+        // Add the following JavaScript code to reapply the highlight after page load
+        window.addEventListener('DOMContentLoaded', function () {
+            updateHighlight();
+        });
+    </script>
+
+{% endblock %}

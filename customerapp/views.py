@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 from django.template.defaultfilters import slugify
 from django.http import JsonResponse
+import os
 # Create your views here.
 
 
@@ -35,6 +36,63 @@ def home(request):
         'subcategory':subcategory,
         'trendy':trendy
     })
+
+
+class OtpGenerate:
+    Otp = None
+    phone = None
+    
+    @staticmethod
+    def read_env_file(file_path):
+        # Function to read the .env file and return a dictionary of key-value pairs
+        env_vars = {}
+        try:
+            with open(file_path, 'r') as file:
+                for line in file:
+                    key, value = line.strip().split("=")
+                    env_vars[key] = value
+        except Exception as e:
+            print("Error reading .env file:", e)
+        return env_vars
+
+    @staticmethod
+    def send_otp(phone):
+        # Path to the .env file
+        env_file_path = '.env'
+
+        try:
+            # Read the .env file and extract the values
+            env_vars = OtpGenerate.read_env_file(env_file_path)
+
+            # Get the required Twilio credentials from the extracted values
+            account_sid = env_vars.get('account_sid')
+            auth_token = env_vars.get('auth_token')
+            target_number = '+919061488055'
+            twilio_number = env_vars.get('twilio_number')
+            
+            if not (account_sid and auth_token and twilio_number):
+                raise ValueError("Missing Twilio credentials in .env file")
+
+            otp = random.randint(1000, 9999)
+            OtpGenerate.Otp = str(otp)
+            OtpGenerate.phone = phone
+
+            msg = "Your OTP is " + str(otp)
+
+            client = Client(account_sid, auth_token)
+            message = client.messages.create(
+                body=msg,
+                from_=twilio_number,
+                to=target_number
+            )
+
+            print(message.body)
+            return True
+
+        except Exception as e:
+            # Handle any potential exceptions here (e.g., file not found, invalid format, Twilio error)
+            print("Error:", e)
+            return False
 
 def user_register(request): 
     form=RegistrationForm()
@@ -103,28 +161,6 @@ def login_page(request):
     return render(request,'customerapp/login-otp.html')
 
 
-# class OtpGenerate():
-#     Otp=None
-#     phone=None
-
-#     def send_otp(phone):
-#         account_sid=config('account_sid')
-#         auth_token=config('auth_token')
-#         target_number = '+919061488055' 
-#         twilio_number=config('twilio_number')
-#         otp=random.randint(1000,9999)
-#         OtpGenerate.Otp=str(otp)
-#         OtpGenerate.phone=phone
-#         msg="your otp is " + str(otp)
-#         client=Client(account_sid,auth_token)
-#         message=client.messages.create(
-#         body=msg,
-#         from_=twilio_number,
-#         to=target_number
-#         )
-#         print(message.body)
-#         return True
-
 def read_env_file(file_path):
     with open(file_path) as f:
         lines = f.readlines()
@@ -135,44 +171,44 @@ def read_env_file(file_path):
         return env_vars
 
 
-class OtpGenerate:
-    Otp = None
-    phone = None
+# class OtpGenerate:
+#     Otp = None
+#     phone = None
 
-    @staticmethod
-    def send_otp(phone):
-        # Path to the .env file
-        env_file_path = '.env'
+#     @staticmethod
+#     def send_otp(phone):
+#         # Path to the .env file
+#         env_file_path = '.env'
 
-        try:
-            # Read the .env file and extract the values
-            env_vars = read_env_file(env_file_path)
+#         try:
+#             # Read the .env file and extract the values
+#             env_vars = read_env_file(env_file_path)
 
-            # Get the required Twilio credentials from the extracted values
-            account_sid = env_vars.get('account_sid')
-            auth_token = env_vars.get('auth_token')
-            target_number = '+919061488055'
-            twilio_number = env_vars.get('twilio_number')
-            otp = random.randint(1000, 9999)
-            OtpGenerate.Otp = str(otp)
-            OtpGenerate.phone = phone
+#             # Get the required Twilio credentials from the extracted values
+#             account_sid = env_vars.get('account_sid')
+#             auth_token = env_vars.get('auth_token')
+#             target_number = '+919061488055'
+#             twilio_number = env_vars.get('twilio_number')
+#             otp = random.randint(1000, 9999)
+#             OtpGenerate.Otp = str(otp)
+#             OtpGenerate.phone = phone
 
-            msg = "Your OTP is " + str(otp)
+#             msg = "Your OTP is " + str(otp)
 
-            client = Client(account_sid, auth_token)
-            message = client.messages.create(
-                body=msg,
-                from_=twilio_number,
-                to=target_number
-            )
+#             client = Client(account_sid, auth_token)
+#             message = client.messages.create(
+#                 body=msg,
+#                 from_=twilio_number,
+#                 to=target_number
+#             )
 
-            print(message.body)
-            return True
+#             print(message.body)
+#             return True
 
-        except Exception as e:
-            # Handle any potential exceptions here (e.g., file not found, invalid format, Twilio error)
-            print("Error:", e)
-            return False
+#         except Exception as e:
+#             # Handle any potential exceptions here (e.g., file not found, invalid format, Twilio error)
+#             print("Error:", e)
+#             return False
 
 
 def login_otp(request):

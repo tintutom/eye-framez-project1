@@ -27,7 +27,7 @@ import io
 from docx import Document
 from django.http import HttpResponse
 
-@login_required(login_url='adminlogin')
+
 def admin_login(request):
     if request.method=='POST':
         email=request.POST['email']
@@ -511,7 +511,8 @@ def add_variations(request, id):
         print("data saved ")
 
         messages.success(request, "Variation added.")
-        return redirect(reverse('products', kwargs={'id': id}))
+        return redirect('add_variations', id=id)
+        # return redirect(reverse('products', kwargs={'id': id}))
     
     variations = product.variations.all()
     

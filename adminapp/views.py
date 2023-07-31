@@ -217,6 +217,7 @@ def subcategory(request):
     return render(request,'adminapp/subcategory.html',context)
 
 
+
 @login_required(login_url='adminlogin')
 def add_subcategory(request):
     categories = Category.objects.all()
@@ -254,7 +255,6 @@ def add_subcategory(request):
     return render(request, 'adminapp/add-subcategory.html', {
         'categories': categories
     })
-
 
 
 @login_required(login_url='adminlogin')

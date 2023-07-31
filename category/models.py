@@ -17,9 +17,12 @@ class Category(models.Model):
     def __str__(self):
         return self.cat_name
 class Subcategory(models.Model):
-    sub_name=models.CharField(max_length=50,unique=True)
-    slug=models.SlugField(max_length=200,unique=True)
-    parent_cat=models.ForeignKey(Category,on_delete=models.CASCADE)
+    sub_name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=200, unique=True)
+    parent_cat = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('sub_name', 'parent_cat')
 
     def get_url(self):
         return reverse('products_by_subcategory',args=[self.parent_cat.slug,self.slug])

@@ -217,31 +217,42 @@ def subcategory(request):
     return render(request,'adminapp/subcategory.html',context)
 
 
-
 @login_required(login_url='adminlogin')
 def add_subcategory(request):
-    category=Category.objects.all()
-    if request.method=='POST':
-        if request.POST.get('selectcat') and request.POST.get('subcatname'):
-            cate=request.POST.get('selectcat')
-            sub_name=request.POST.get('subcatname')
-            if Subcategory.objects.filter(sub_name=sub_name).exists():
-                messages.error(request,'Already Exists')
-                return redirect('subcategory')
+    categories = Category.objects.all()
+
+    if request.method == 'POST':
+        parent_cat_id = request.POST.get('selectcat')
+        sub_name = request.POST.get('subcatname')
+
+        if parent_cat_id and sub_name:
+            parent_category = get_object_or_404(Category, id=parent_cat_id)
+
+            # Check if the subcategory with the same name and parent category already exists
+            existing_subcategory = Subcategory.objects.filter(sub_name=sub_name, parent_cat=parent_category).first()
+
+            if existing_subcategory:
+                # If the subcategory exists, just associate it with the new category.
+                messages.success(request, 'Subcategory already exists. Associated with the new category.')
             else:
-                obj=Subcategory()
-                obj.sub_name=sub_name
-                obj.slug=slugify(sub_name)
-                
-                obj.parent_cat_id=cate
-                obj.save()
-                messages.error(request,'SubCategory Created')
-                return redirect('subcategory')
+                # If the subcategory doesn't exist, create a new one.
+                subcategory = Subcategory()
+                subcategory.sub_name = sub_name
+                subcategory.parent_cat = parent_category
+
+                # Generate the slug with parent category's slug to ensure uniqueness.
+                subcategory.slug = slugify(sub_name + ' ' + parent_category.slug)
+
+                subcategory.save()
+                messages.success(request, 'Subcategory Created')
+
         else:
-            messages.error(request,'Required all Fields...')
-            return redirect('addsubcategory')
-    return render(request,'adminapp/add-subcategory.html',{
-        'categories':category
+            messages.error(request, 'Required all Fields')
+
+        return redirect('addsubcategory')
+
+    return render(request, 'adminapp/add-subcategory.html', {
+        'categories': categories
     })
 
 

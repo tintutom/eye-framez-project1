@@ -8,7 +8,7 @@ import uuid
 
 # Create your models here.
 class CustomUser(AbstractBaseUser,PermissionsMixin):
-    # username=None
+
     first_name=models.CharField(max_length=255)
     last_name=models.CharField(max_length=255)
     email=models.EmailField(unique=True)

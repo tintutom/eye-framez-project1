@@ -238,28 +238,6 @@ class generateInvoice(View):
         return HttpResponse(pdf, content_type='application/pdf')
 
 
-# for generating pdf invoice
-# class generateInvoice(View):
-#     def get(self,request,id,*args,**kwargs):
-#         try:
-#             orders=Order.objects.get(id=id,user=request.user)
-            
-#         except:
-#             return HttpResponse("505 not found")
-#         data={
-#             'order_id':orders.id,
-#             'date':str(orders.created_at),
-#             'name':orders.user.first_name,
-#             'address':orders.address.address,
-#             'total_price':orders.total_price,
-            
-#             'transaction_id':orders.payment_id,
-#             'payment_mode':orders.payment_mode,
-#             'user_email':orders.user.email,
-#             'orders':orders
-#         }
-#         pdf=render_to_pdf('customerapp/invoice.html',data)
-#         return HttpResponse(pdf,content_type='application/pdf')
 
 def render_to_pdf(template_src,context_dict={}):
     template=get_template(template_src)

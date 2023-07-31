@@ -171,46 +171,6 @@ def read_env_file(file_path):
         return env_vars
 
 
-# class OtpGenerate:
-#     Otp = None
-#     phone = None
-
-#     @staticmethod
-#     def send_otp(phone):
-#         # Path to the .env file
-#         env_file_path = '.env'
-
-#         try:
-#             # Read the .env file and extract the values
-#             env_vars = read_env_file(env_file_path)
-
-#             # Get the required Twilio credentials from the extracted values
-#             account_sid = env_vars.get('account_sid')
-#             auth_token = env_vars.get('auth_token')
-#             target_number = '+919061488055'
-#             twilio_number = env_vars.get('twilio_number')
-#             otp = random.randint(1000, 9999)
-#             OtpGenerate.Otp = str(otp)
-#             OtpGenerate.phone = phone
-
-#             msg = "Your OTP is " + str(otp)
-
-#             client = Client(account_sid, auth_token)
-#             message = client.messages.create(
-#                 body=msg,
-#                 from_=twilio_number,
-#                 to=target_number
-#             )
-
-#             print(message.body)
-#             return True
-
-#         except Exception as e:
-#             # Handle any potential exceptions here (e.g., file not found, invalid format, Twilio error)
-#             print("Error:", e)
-#             return False
-
-
 def login_otp(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -459,18 +419,6 @@ def user_wishlist(request):
     })
 
 
-
-# Variation
-
-# def load_size_user(request):
-#     color=request.GET.get('color_id')
-
-#     size=Size.objects.filter(color=color).all()
-#     return render(request,'customerapp/user-size-dropdown.html',{
-#         'size':size
-#     })
-
-
 # User Profile
 @login_required(login_url='login-page')
 def my_profile(request):
@@ -502,52 +450,6 @@ def change_password(request):
             messages.error(request, 'Password Does Not Match!')
             return redirect('my_profile')
     return redirect('my_profile')
-
-
-# def change_password(request):
-#     if request.method == 'POST':
-#         current_password = request.POST.get('current_password')
-#         new_password = request.POST.get('new_password')
-#         confirm_password = request.POST.get('confirm_password')
-
-#         user = CustomUser.objects.get(first_name__exact=request.user.first_name)
-
-#         if new_password == confirm_password:
-#             success = user.check_password(current_password)
-#             if success:
-#                 user.set_password(new_password)
-#                 messages.success(request, 'Password Changed Successfully')
-#                 return redirect('my_profile')
-#             else:
-#                 messages.error(request, 'Your Existing Password Is Incorrect')
-#                 return redirect('my_profile')
-#         else:
-#             messages.error(request, 'Password Does Not Match!')
-#             return redirect('my_profile')
-#     return redirect('my_profile')
- 
-# have some isuue with password reset
-# def change_password(request):
-#     if request.method=='POST':
-#         current_password=request.POST.get('current_password')
-#         new_password=request.POST.get('new_password')
-#         confirm_password=request.POST.get('confirm_password')
-
-#         user=CustomUser.objects.get(first_name__exact=request.user.first_name)
-
-#         if new_password == confirm_password:
-#             success=user.check_password(current_password)
-#             if success:
-#                 user.set_password(new_password)
-#                 messages.success('Password Changed Succesfully')
-#                 return redirect('my_profile')
-#             else:
-#                 messages.error(request, "Your Existing Password Is Incorrect")
-#                 return redirect("my_profile")
-#         else:
-#             messages.info(request, "Password Does Not Match!")
-#             return redirect("my_profile")
-#     return redirect('my_profile')
 
 
 def filter_price(request):

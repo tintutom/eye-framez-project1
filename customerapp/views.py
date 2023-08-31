@@ -20,8 +20,6 @@ from django.contrib import auth
 from django.template.defaultfilters import slugify
 from django.http import JsonResponse
 import os
-# Create your views here.
-
 
 @never_cache
 def home(request):
@@ -308,8 +306,6 @@ def login_pass(request):
             return redirect(login_pass)
     return render(request,'customerapp/login-pass.html')
 
-
-
 def user_logout(request):
     logout(request)
     return redirect('home')
@@ -388,10 +384,8 @@ def search(request):
     
     return render(request,'customerapp/store.html',context)
 
-
 # Wishlist
 @login_required(login_url='login-page')
-
 def add_to_wishlist(request, id):
     product = get_object_or_404(Product, id=id)
     is_added = False  # Flag to track if the product is already in the wishlist
@@ -410,8 +404,7 @@ def add_to_wishlist(request, id):
     return HttpResponseRedirect(request.META["HTTP_REFERER"], {'is_added': is_added})
 
 @login_required(login_url='login-page')
-def user_wishlist(request):
-    
+def user_wishlist(request):   
     products=Product.objects.filter(users_wishlist=request.user)
     return render(request,'customerapp/wishlist.html',{
         'wishlist':products,
@@ -426,8 +419,9 @@ def my_profile(request):
     return render(request,'customerapp/my_profile.html',{
         'category':categories
     })
-
 User = get_user_model()
+
+
 def change_password(request):
     if request.method == 'POST':
         current_password = request.POST.get('current_password')

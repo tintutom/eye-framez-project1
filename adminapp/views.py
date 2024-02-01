@@ -284,31 +284,6 @@ def edit_subcategory(request, id):
         'categories': category, 'sub': sub
     })
 
-# def edit_subcategory(request,id):
-#     category=Category.objects.all()
-#     sub=Subcategory.objects.get(id=id)
-#     if request.method=='POST':
-#         cate=request.POST.get('selectcat')
-#         sub_name=request.POST.get('subcatname')
-#         if Subcategory.objects.filter(sub_name=sub_name).exists():
-#             messages.error(request,'Already Exists')
-#             return redirect('subcategory')
-#         else:
-            
-#             sub.sub_name=sub_name
-#             sub.slug=slugify(sub_name)
-            
-#             sub.parent_cat_id=cate
-#             sub.save()
-#             messages.error(request,'SubCategory Created')
-#             return redirect('subcategory')
-
-    
-#     return render(request,'adminapp/edit-subcategory.html',{
-#         'categories':category,'sub':sub
-#     })
-
-
 @login_required(login_url='adminlogin')
 def delete_subcategory(request,id):
     Subcategory.objects.filter(id=id).delete()
@@ -445,30 +420,6 @@ def edit_product(request, id):
 def delete_product(request,id):
     Product.objects.get(id=id).delete()
     return redirect('products')
-
-
-
-# Product variation
-# @login_required(login_url='adminlogin')
-# def add_size(request):
-#     if request.method=="POST":
-#         if request.POST.get('selectcolor') and request.POST.get('size'):
-#             seccolor=request.POST.get('selectcolor')
-#             size=request.POST.get('size')
-#             if Size.objects.filter(color=seccolor,size_value=size).exists():
-#                 messages.error(request,"already exists")
-#                 return redirect('variations')
-#             else:
-#                 s=Size()
-#                 s.color_id=seccolor
-#                 s.size_value=size
-#                 s.save()
-#                 messages.success(request,'added new size')
-#                 return redirect('variations')
-#         else:
-#             messages.error(request,'Required all fields!!')
-#             return redirect('variations')
-
 
 @login_required(login_url='adminlogin')
 def add_color(request):
@@ -900,72 +851,6 @@ def product_excel(request):
     return response
 
 
-
-# @login_required(login_url='adminlogin')
-# def salesReport(request):
-#     orders=Order.objects.all()
-#     new_order_list=[]
-
-#     for i in orders:
-#         order_items=OrderItem.objects.filter(order_id=i.id)
-#         for j in order_items:
-#             item={
-#                 'id':i.id,
-#                 'ordered_date':i.created_at,
-#                 'user':i.user,
-#                 'price':j.price,
-#                 'method':i.payment_mode,
-#                 'status':j.status,
-
-
-#             }
-#             new_order_list.append(item)
-#     paginator=Paginator(new_order_list,10)
-#     page=request.GET.get('page')
-#     paged_orders_list=paginator.get_page(page)    
-#     return render(request,'adminapp/salesReport.html',{
-#         'order':paged_orders_list,
-#     })
-
-
-# @login_required(login_url='adminlogin')
-# def by_date(request):
-#     from_date_str = request.GET.get('from')
-#     to_date_str = request.GET.get('to')
-
-#     if from_date_str and to_date_str:
-#         sales_date_from = datetime.datetime.strptime(from_date_str, "%Y-%m-%d")
-#         sales_date_to = datetime.datetime.strptime(to_date_str, "%Y-%m-%d")
-
-#         if sales_date_from > sales_date_to:
-#             messages.error(request, 'Invalid dates: "From" date cannot be later than "To" date.')
-#             return redirect('salesReport')
-
-#         sales_date_to += datetime.timedelta(days=1)
-#         orders = Order.objects.filter(created_at__range=[sales_date_from, sales_date_to])
-
-#         new_order_list = []
-
-#         for i in orders:
-#             order_items = OrderItem.objects.filter(order_id=i.id)
-#             for j in order_items:
-#                 item = {
-#                     'id': i.id,
-#                     'ordered_date': i.created_at,
-#                     'user': i.user,
-#                     'price': j.price,
-#                     'method': i.payment_mode,
-#                     'status': j.status,
-#                 }
-#                 new_order_list.append(item)
-#     else:
-#         messages.error(request, 'Select fields before submitting..!! ')
-#         return redirect('salesReport')
-
-#     return render(request, 'adminapp/salesReport.html', {
-#         'order': new_order_list,
-#     })
-
 from django.utils import timezone
 
 @login_required(login_url='adminlogin')
@@ -1031,42 +916,6 @@ def by_date(request):
     return render(request, 'adminapp/salesReport.html', {
         'order': new_order_list,
     })
-
-
-
-
-
-# def by_date(request):
-#     if request.GET.get('from'):
-#         sales_date_from=datetime.datetime.strptime(request.GET.get('from'),"%Y-%m-%d")
-#         sales_date_to=datetime.datetime.strptime(request.GET.get('to'),"%Y-%m-%d")
-
-#         sales_date_to+=datetime.timedelta(days=1)
-#         orders=Order.objects.filter(created_at__range=[sales_date_from,sales_date_to])
-
-#         new_order_list=[]
-
-#         for i in orders:
-#             order_items=OrderItem.objects.filter(order_id=i.id)
-#             for j in order_items:
-#                 item={
-#                     'id':i.id,
-#                     'ordered_date':i.created_at,
-#                     'user':i.user,
-#                     'price':j.price,
-#                     'method':i.payment_mode,
-#                     'status':j.status,
-
-
-#                 }
-#                 new_order_list.append(item)
-#     else:
-#         messages.error(request,'Select fields before submitting..!! ')
-#         return redirect('salesReport')
-        
-#     return render(request,'adminapp/salesReport.html',{
-#         'order':new_order_list,
-#     })
 
 class generatesalesReportPdf(View):
     def get(self,request,*args,**kwargs):

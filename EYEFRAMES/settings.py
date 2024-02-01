@@ -34,6 +34,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['.vercel.app','now.sh','127.0.0.1','localhost']
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -161,3 +162,4 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY ='unsafe-none'
 # RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 RAZORPAY_KEY_ID = 'rzp_test_w6JtyXoIdcYWS4'
 RAZORPAY_KEY_SECRET = 'nwY7nZXOqgd8TlRYUE1GIGQg'
+

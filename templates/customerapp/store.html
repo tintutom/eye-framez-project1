@@ -40,6 +40,11 @@ Store
                 <p class="m-0 px-2">-</p>
                 <p class="m-0">Shop</p>
             </div>
+            {% if search_query %}
+        <div class="mt-3">
+            <p>Search Results for: "{{ search_query }}"</p>
+        </div>
+        {% endif %}
         </div>
     </div>
     <!-- Page Header End -->

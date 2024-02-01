@@ -4,6 +4,8 @@ from enum import unique
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
 from .managers import CustomUserManager
+from django.contrib.auth.models import User
+
 import uuid
 
 # Create your models here.

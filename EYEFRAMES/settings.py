@@ -25,13 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = 'django-insecure-v*6)$v26u#z($o(@o24s9n+2pdg6+m+*vjpa1u^!hj_00nml=3'
 
 
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app','now.sh','127.0.0.1','localhost']
 
 
 # Application definition
@@ -91,11 +91,12 @@ WSGI_APPLICATION = "EYEFRAMES.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST")
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': '-Ae6AbG66Ce5-C65b6bg1DBaC3d3EBG3',
+        'HOST': 'monorail.proxy.rlwy.net',
+        'POST': '5526'
     }
 }
 
@@ -156,5 +157,7 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY ='unsafe-none'
 
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+# RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+# RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
+RAZORPAY_KEY_ID = 'rzp_test_w6JtyXoIdcYWS4'
+RAZORPAY_KEY_SECRET = 'nwY7nZXOqgd8TlRYUE1GIGQg'

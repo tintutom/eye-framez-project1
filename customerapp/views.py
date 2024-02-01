@@ -321,6 +321,8 @@ def store(request,category_slug=None,subcategory_slug=None):
     subcategories=None
     products=None
     categories=None
+    search_query = request.GET.get('keyword')
+    
     if category_slug!=None:
         categories=get_object_or_404(Category,slug=category_slug)
         products=Product.objects.filter(category=categories)
@@ -337,12 +339,17 @@ def store(request,category_slug=None,subcategory_slug=None):
     else:
 
         products=Product.objects.all()
+        if search_query:
+            products = products.filter(Q(product_name__icontains=search_query) | Q(product_desc__icontains=search_query))
+
+
         paginator=Paginator(products,2)
         page=request.GET.get('page')
         paged_products=paginator.get_page(page)
     return render(request,'customerapp/store.html',{
         'category':category,
-        'products':paged_products
+        'products':paged_products,
+        'search_query': search_query, 
     })
 
 def product_detail(request, category_slug, subcategory_slug, product_slug):

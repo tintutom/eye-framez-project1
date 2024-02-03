@@ -1,29 +1,20 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "EYEFRAMES/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
-      },
-      {
-        "src": "build_files.sh",
-        "use": "@vercel/static-build",
-        "config": {
-          "distDir": "staticfiles_build"
+    
+    "builds":[
+        {
+            "src":"office_emp_proj/wsgi.py",
+            "use":"@vercel/python",
+            "config":{"maxLambdaSize":"15mb"}
         }
-      }
+         
     ],
-    "routes": [
-      {
-        "src": "/static/(.*)",
-        "dest": "/static/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "EYEFRAMES/wsgi.py"
-      }
+    "routes":[
+         
+        {
+            "src":"/(.*)",
+            "dest":"office_emp_proj/wsgi.py"
+        }
     ]
-  }
+}
   
   

@@ -73,14 +73,20 @@ WSGI_APPLICATION = "EYEFRAMES.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+#DATABASES = {
+#    "default": {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'railway',
+#        'USER': 'postgres',
+#        'PASSWORD': '-Ae6AbG66Ce5-C65b6bg1DBaC3d3EBG3',
+#        'HOST': 'monorail.proxy.rlwy.net',
+#        'POST': '5526'
+#    }
+#}
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': '-Ae6AbG66Ce5-C65b6bg1DBaC3d3EBG3',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'POST': '5526'
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
